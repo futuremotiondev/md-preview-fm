@@ -750,6 +750,7 @@ const UPDATE_CHECK_JS: &str = include_str!("../assets/enhance/update-check.js");
 const KATEX_JS: &str = include_str!("../assets/katex/katex.min.js");
 const KATEX_CSS: &str = include_str!("../assets/katex/katex.inline.css");
 const MERMAID_JS: &str = include_str!("../assets/mermaid/mermaid.min.js");
+const FUTUREMOTION_THEME_CSS: &str = include_str!("../assets/theme/futuremotion-theme.css");
 const MAX_RECENT_FILES: usize = 8;
 
 fn html_escape_ta(s: &str) -> String {
@@ -1393,7 +1394,8 @@ body.editing #btn-print {{ display: none; }}
   #app {{ max-width: none; padding: 0; }}
   #preview .mdp-table-wrap {{ width: auto; margin: 1em 0; transform: none; overflow: visible; }}
 }}
-	</style></head><body class="{body_class}">
+	</style>
+<style id="futuremotion-theme">{futuremotion_theme_css}</style></head><body class="{body_class}">
 	<div class="tabbar" id="tabbar"><div class="tabs" id="tabs"></div><div class="doc-stats" id="doc-stats" aria-live="polite"></div><button class="tab-open" id="tab-open" type="button" title="{btn_new}" aria-label="{btn_new}">+</button></div>
 	<div class="toolbar">
 	  <button id="btn-open" title="{btn_open}" aria-label="{btn_open}"></button>
@@ -2045,6 +2047,7 @@ window.__mdPreviewInstallUpdateCheck({{
 </body></html>"#,
         css_light = HLJS_LIGHT,
         css_dark = HLJS_DARK,
+        futuremotion_theme_css = FUTUREMOTION_THEME_CSS,
         base_tag = base_tag,
         preview_html = preview_html,
         raw_md_escaped = html_escape_ta(raw_md),
@@ -2691,6 +2694,20 @@ mod tests {
         assert!(page.contains("width: min(calc(100vw - 64px), 1280px)"));
         assert!(page.contains("if(window.__enhancePreview)window.__enhancePreview();"));
         assert!(page.contains("nativeUpdater: false"));
+    }
+
+    #[test]
+    fn page_loads_futuremotion_theme_after_builtin_styles() {
+        let page = build_startup_page(&Strings::for_lang(Lang::En), false);
+        let builtin = page.find("@page {").expect("built-in stylesheet missing");
+        let theme = page
+            .find(r#"<style id="futuremotion-theme">"#)
+            .expect("futuremotion theme stylesheet missing");
+        assert!(theme > builtin, "theme must load after the built-in styles to override them");
+        assert!(
+            page.contains(FUTUREMOTION_THEME_CSS),
+            "theme CSS must be embedded verbatim"
+        );
     }
 
     #[test]

@@ -1,0 +1,260 @@
+/* =============================================================================
+   Futuremotion theme for MD Preview FM
+   -----------------------------------------------------------------------------
+   Loaded after upstream's built-in <style> in build_page() (src/main.rs), so a
+   selector with the same specificity wins by source order. This is plain CSS:
+   use single braces here. The doubled-brace rule applies only inside main.rs.
+
+   Every token starts at upstream's value, so the app looks unchanged until you
+   edit them. One deliberate difference: code blocks follow the content zoom
+   (Ctrl +/-); upstream pins them at 14px.
+
+   Selector notes
+   - Match upstream's `#preview <element>` specificity; a bare `h1 {}` loses.
+   - Upstream's dark block puts !important on the `#preview pre` background,
+     so the code-block background below carries !important too.
+   - Inline code uses `#preview code:not(pre code)`, the selector upstream's
+     dark block uses, so these rules win in both themes.
+
+   Full rule map and recipes: dev-docs/styling.md
+   ========================================================================== */
+
+/* -----------------------------------------------------------------------------
+   Tokens (light theme)
+   -------------------------------------------------------------------------- */
+
+:root {
+  /* Fonts */
+  --fm-font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; /* tabs, toolbar, empty screen */
+  --fm-font-body: var(--fm-font-ui);         /* document text */
+  --fm-font-heading: var(--fm-font-body);    /* document headings */
+  --fm-font-mono: Consolas, monospace;       /* inline code, code blocks, editor */
+
+  /* Document text */
+  --fm-text-size: 15px;                      /* at 100% zoom */
+  --fm-line-height: 1.6;
+  --fm-letter-spacing: normal;
+  --fm-block-space: 1em;                     /* above and below paragraphs, lists, code blocks */
+
+  /* Headings (sizes are relative to the document text size) */
+  --fm-h1-size: 2em;
+  --fm-h2-size: 1.5em;
+  --fm-h3-size: 1.17em;
+  --fm-h4-size: 1em;
+  --fm-h5-size: 0.83em;
+  --fm-h6-size: 0.67em;
+  --fm-heading-weight: 700;
+  --fm-heading-line-height: var(--fm-line-height);
+  --fm-heading-letter-spacing: normal;
+  --fm-heading-space-above: 1.4em;           /* h1-h4; h5/h6 keep browser defaults */
+
+  /* Inline code */
+  --fm-code-inline-size: 90%;
+  --fm-code-inline-padding: 2px 6px;
+  --fm-code-inline-radius: 4px;
+
+  /* Code blocks */
+  --fm-code-block-size: 14px;                /* at 100% zoom */
+  --fm-code-block-line-height: var(--fm-line-height);
+  --fm-code-block-padding: 16px;
+  --fm-code-block-radius: 8px;
+  --fm-code-block-border: none;              /* e.g. 1px solid #e3e6ea */
+
+  /* Tables */
+  --fm-table-cell-padding: 8px 12px;
+  --fm-table-head-weight: 600;
+  --fm-table-max-width: 1280px;              /* wide tables break out of the text column up to this */
+
+  /* Layout */
+  --fm-content-max-width: none;              /* e.g. 860px for a centered reading column */
+  --fm-page-padding: 24px;
+
+  /* Colors */
+  --fm-text: #1a1a1a;
+  --fm-page-bg: #fff;
+  --fm-link: #0969da;
+  --fm-rule: #e1e4e8;                        /* h1/h2 underline and horizontal rules */
+  --fm-quote-border: #ddd;
+  --fm-quote-text: #666;
+  --fm-code-inline-bg: #f0f0f0;
+  --fm-code-block-bg: #f6f8fa;
+  --fm-table-border: #ddd;
+  --fm-table-head-bg: #f6f8fa;
+  --fm-table-head-text: #1a1a1a;
+  --fm-table-stripe-bg: transparent;         /* even rows, e.g. #fafbfc */
+}
+
+/* -----------------------------------------------------------------------------
+   Tokens (dark theme: follows the Windows app mode)
+   -------------------------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fm-text: #d4d4d4;
+    --fm-page-bg: #1e1e1e;
+    --fm-link: #6cb6ff;
+    --fm-rule: #333;
+    --fm-quote-border: #444;
+    --fm-quote-text: #aaa;
+    --fm-code-inline-bg: #2d2d2d;
+    --fm-code-block-bg: #2d2d2d;
+    --fm-table-border: #444;
+    --fm-table-head-bg: #2d2d2d;
+    --fm-table-head-text: #f0f0f0;
+    --fm-table-stripe-bg: transparent;       /* e.g. #22262c */
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Page and layout
+   -------------------------------------------------------------------------- */
+
+body {
+  font-family: var(--fm-font-ui);
+  color: var(--fm-text);
+  background: var(--fm-page-bg);
+}
+
+#app {
+  max-width: var(--fm-content-max-width);
+  padding: var(--fm-page-padding);
+}
+
+/* -----------------------------------------------------------------------------
+   Document text
+   -------------------------------------------------------------------------- */
+
+#preview {
+  font-family: var(--fm-font-body);
+  font-size: calc(var(--fm-text-size) * var(--content-scale));
+  line-height: var(--fm-line-height);
+  letter-spacing: var(--fm-letter-spacing);
+}
+
+#preview p,
+#preview ul,
+#preview ol,
+#preview pre {
+  margin-top: var(--fm-block-space);
+  margin-bottom: var(--fm-block-space);
+}
+
+#preview li > ul,
+#preview li > ol {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#preview a {
+  color: var(--fm-link);
+}
+
+#preview hr {
+  border-top-color: var(--fm-rule);
+}
+
+#preview blockquote {
+  border-left-color: var(--fm-quote-border);
+  color: var(--fm-quote-text);
+}
+
+/* -----------------------------------------------------------------------------
+   Headings
+   -------------------------------------------------------------------------- */
+
+#preview h1,
+#preview h2,
+#preview h3,
+#preview h4,
+#preview h5,
+#preview h6 {
+  font-family: var(--fm-font-heading);
+  font-weight: var(--fm-heading-weight);
+  line-height: var(--fm-heading-line-height);
+  letter-spacing: var(--fm-heading-letter-spacing);
+}
+
+#preview h1,
+#preview h2,
+#preview h3,
+#preview h4 {
+  margin-top: var(--fm-heading-space-above);
+}
+
+#preview h1 { font-size: var(--fm-h1-size); border-bottom-color: var(--fm-rule); }
+#preview h2 { font-size: var(--fm-h2-size); border-bottom-color: var(--fm-rule); }
+#preview h3 { font-size: var(--fm-h3-size); }
+#preview h4 { font-size: var(--fm-h4-size); }
+#preview h5 { font-size: var(--fm-h5-size); }
+#preview h6 { font-size: var(--fm-h6-size); }
+
+/* -----------------------------------------------------------------------------
+   Code
+   -------------------------------------------------------------------------- */
+
+#preview code {
+  font-family: var(--fm-font-mono);
+}
+
+#preview code:not(pre code) {
+  font-size: var(--fm-code-inline-size);
+  padding: var(--fm-code-inline-padding);
+  border-radius: var(--fm-code-inline-radius);
+  background: var(--fm-code-inline-bg);
+}
+
+#preview pre {
+  padding: var(--fm-code-block-padding);
+  border: var(--fm-code-block-border);
+  border-radius: var(--fm-code-block-radius);
+  background: var(--fm-code-block-bg) !important;
+}
+
+#preview pre code {
+  font-size: calc(var(--fm-code-block-size) * var(--content-scale));
+  line-height: var(--fm-code-block-line-height);
+}
+
+#editor {
+  font-family: var(--fm-font-mono);
+}
+
+/* -----------------------------------------------------------------------------
+   Tables
+   -------------------------------------------------------------------------- */
+
+#preview .mdp-table-wrap {
+  width: min(calc(100vw - 64px), var(--fm-table-max-width));
+}
+
+#preview table th,
+#preview table td {
+  padding: var(--fm-table-cell-padding);
+  border-color: var(--fm-table-border);
+}
+
+#preview table th {
+  font-weight: var(--fm-table-head-weight);
+  color: var(--fm-table-head-text);
+  background: var(--fm-table-head-bg);
+}
+
+#preview table tr:nth-child(even) td {
+  background: var(--fm-table-stripe-bg);
+}
+
+/* -----------------------------------------------------------------------------
+   Print: this file loads after upstream's print rules, so repeat the resets
+   for anything above that print should ignore.
+   -------------------------------------------------------------------------- */
+
+@media print {
+  #app {
+    max-width: none;
+    padding: 0;
+  }
+
+  #preview .mdp-table-wrap {
+    width: auto;
+  }
+}
