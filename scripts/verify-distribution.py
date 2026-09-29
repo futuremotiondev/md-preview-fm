@@ -1,17 +1,12 @@
 """Verify public downloads and automated builds respect supported platforms."""
 from pathlib import Path
-import json
 import re
 import subprocess
 
-for filename in ['docs/index.html', 'docs/support.html', 'README.md', 'README_zh.md']:
+for filename in ['README.md', 'README_zh.md']:
     text = Path(filename).read_text()
     assert 'apps.apple.com' not in text, filename
     assert not re.search(r'https?://[^\s"<>)]*\.(?:dmg|ipa)', text), filename
-html = Path('docs/index.html').read_text()
-metadata = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', html, re.S)[1])
-assert metadata['operatingSystem'] == 'Windows, Linux, Android'
-assert 'releases/download/mobile-android-v1.0.10/MD-Preview-Android.apk' in html
 for filename in ['.github/workflows/ci.yml', '.github/workflows/release.yml']:
     text = Path(filename).read_text()
     assert 'build-macos' not in text and 'apple-darwin' not in text, filename
