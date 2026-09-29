@@ -53,7 +53,7 @@ Or launch it empty and drag a file in. Pick it from "Open with" in Explorer to m
 
 ## Customizing the look
 
-All styling lives in [`assets/theme/futuremotion-theme.css`](assets/theme/futuremotion-theme.css). Edit the `--fm-*` tokens for fonts, sizes, spacing, headings, code, tables and colors (light and dark), then rebuild. The [styling guide](dev-docs/styling.md) maps every built-in rule and covers embedding fonts.
+All styling lives in [`assets/theme/futuremotion-theme.css`](assets/theme/futuremotion-theme.css). Edit the `--fm-*` tokens for fonts, sizes, spacing, headings, code, tables and colors (light and dark), then rebuild. Inter and JetBrains Mono are embedded by `scripts/build-theme-fonts.py`; headings use SF Pro Display when it's installed. The [styling guide](dev-docs/styling.md) maps every built-in rule and covers embedding fonts.
 
 ## Building from source
 

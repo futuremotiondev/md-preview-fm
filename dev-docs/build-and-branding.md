@@ -12,17 +12,17 @@ Line numbers (≈) refer to `src/main.rs` as of fork v1.0.0; search the quoted a
 | Visual Studio Build Tools, "Desktop development with C++" | MSVC linker, plus the Windows SDK `rc.exe` that `winresource` uses to embed the icon and version info |
 | WebView2 Runtime                                          | Runtime dependency; preinstalled on Windows 10 and 11, not bundled                                    |
 
-Verified on this machine: rustc 1.98.1 stable MSVC; the release build produces a 5.5 MB `target\release\md-preview-fm.exe`.
+Verified on this machine: rustc 1.98.1 stable MSVC; the release build produces a 6.6 MB `target\release\md-preview-fm.exe` (about 1 MB of it is the embedded fonts).
 
 ## Building
 
 ```powershell
 cargo build --release      # -> target\release\md-preview-fm.exe
 cargo run -- README.md     # debug build with DevTools (F12)
-cargo test                 # unit tests (42 at v1.0.0)
+cargo test                 # unit tests (43 at v1.0.0)
 ```
 
-- The release exe is a single portable file. All CSS (including `assets/theme/futuremotion-theme.css`), JavaScript, highlight.js, KaTeX (with fonts), Mermaid and the icon are compiled in via `include_str!` / `include_bytes!`. There is no installer.
+- The release exe is a single portable file. All CSS (including the fork's theme and its embedded Inter and JetBrains Mono fonts), JavaScript, highlight.js, KaTeX (with fonts), Mermaid and the icon are compiled in via `include_str!` / `include_bytes!`. There is no installer.
 - The release profile (`Cargo.toml` `[profile.release]`) uses `opt-level = "z"`, LTO, one codegen unit, `strip` and `panic = "abort"`, giving a small binary with a slow final link.
 - Expected warnings: `constant WEBSITE_URL is never used` and an unused `UserEvent` variant. Both belong to macOS-only code paths.
 - `scripts/verify-windows-self-update.sh` (Git Bash + Node) checks the updater's asset-name wiring.
@@ -48,12 +48,12 @@ Actions on a fork may be disabled until you enable them in the repository settin
 | Product name                                   | `MD Preview FM`                                                      | `build.rs` `ProductName`                                                                                |
 | Copyright                                      | `Copyright Futuremotion Studio ©`                                    | `build.rs` `LegalCopyright`                                                                             |
 | Package metadata                               | `authors`, `description`, `repository`, `homepage`, `license-file`   | `Cargo.toml`                                                                                            |
-| Window title                                   | `<file> — MD Preview FM`, or `MD Preview FM` with no file            | `fn update_window_title` ≈ 4164–4166; startup title ≈ 4375–4376                                         |
-| `--help` banner and dialogs                    | `MD Preview FM …`                                                    | ≈ 125, 302, 4341, 4575, 4669, 5020, 5030                                                                |
-| "Open with" display name                       | `MD Preview FM`                                                      | `FriendlyAppName` ≈ 2991                                                                                |
-| File-type ProgID                               | `MDPreviewFM.md`                                                     | `let progid` ≈ 2963                                                                                     |
+| Window title                                   | `<file> — MD Preview FM`, or `MD Preview FM` with no file            | `fn update_window_title` ≈ 4384–4386; startup title ≈ 4595–4596                                         |
+| `--help` banner and dialogs                    | `MD Preview FM …`                                                    | ≈ 125, 302, 4561, 4795, 4889, 5240, 5250                                                                |
+| "Open with" display name                       | `MD Preview FM`                                                      | `FriendlyAppName` ≈ 3211                                                                                |
+| File-type ProgID                               | `MDPreviewFM.md`                                                     | `let progid` ≈ 3183                                                                                     |
 | Config directory                               | `%LOCALAPPDATA%\md-preview-fm` (`~/.config/md-preview-fm` elsewhere) | `fn config_dir` ≈ 231                                                                                   |
-| Registration marker                            | `.md-preview-fm-registered`                                          | `fn register_as_default` ≈ 2949 (Windows), ≈ 2924 (macOS)                                               |
+| Registration marker                            | `.md-preview-fm-registered`                                          | `fn register_as_default` ≈ 3169 (Windows), ≈ 3144 (macOS)                                               |
 | `localStorage` keys                            | `md-preview-fm-content-zoom-v1`, `md-preview-fm:update-check`        | `build_page()` script, `assets/enhance/update-check.js` line 124                                        |
 | Icon                                           | `assets/icon.ico` (still upstream's "#" icon)                        | `build.rs` `set_icon`, `ICON_BYTES` line 25                                                             |
 
@@ -73,9 +73,9 @@ Keep these in sync: `Cargo.toml` `name`; `.github/workflows/ci.yml` (three `targ
 
 ## Self-updater
 
-After first paint, at most once every 24 hours, the page queries `api.github.com/repos/futuremotiondev/md-preview-fm/releases`. If a published (non-draft, non-prerelease) `vX.Y.Z` release is newer than `Cargo.toml`'s `version`, an "Update" button appears in the toolbar. On Windows, clicking it downloads that release's `MD-Preview-FM-windows-x64.exe`, checks its SHA-256 against the digest GitHub reports, replaces the running exe and relaunches (`mod windows_updater` ≈ 3690).
+After first paint, at most once every 24 hours, the page queries `api.github.com/repos/futuremotiondev/md-preview-fm/releases`. If a published (non-draft, non-prerelease) `vX.Y.Z` release is newer than `Cargo.toml`'s `version`, an "Update" button appears in the toolbar. On Windows, clicking it downloads that release's `MD-Preview-FM-windows-x64.exe`, checks its SHA-256 against the digest GitHub reports, replaces the running exe and relaunches (`mod windows_updater` ≈ 3910).
 
-Only the fork's releases are accepted: `fn is_allowed_update_url` (≈ 2087) allows `https://github.com/futuremotiondev/md-preview-fm/releases/…` only, and the test `update_download_urls_are_allowed` asserts that upstream download URLs are rejected.
+Only the fork's releases are accepted: `fn is_allowed_update_url` (≈ 2214) allows `https://github.com/futuremotiondev/md-preview-fm/releases/…` only, and the test `update_download_urls_are_allowed` asserts that upstream download URLs are rejected.
 
 The Windows asset name must match in every one of these places:
 
@@ -83,13 +83,13 @@ The Windows asset name must match in every one of these places:
 | --------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `.github/workflows/release.yml`         | Package step and the `Create Release` file list                                               |
 | `assets/enhance/update-check.js`        | `preferredAssetPattern` (line 61)                                                             |
-| `src/main.rs`                           | `fn preferred_update_asset_name` ≈ 2160; `ends_with("/MD-Preview-FM-windows-x64.exe")` ≈ 3731 |
+| `src/main.rs`                           | `fn preferred_update_asset_name` ≈ 2287; `ends_with("/MD-Preview-FM-windows-x64.exe")` ≈ 3951 |
 | `scripts/release.sh`                    | `require_release_assets`                                                                      |
 | `scripts/verify-windows-self-update.sh` | grep checks and the simulated release                                                         |
 
-Repository URL sites: the page auto-check config (≈ 2038–2044), `fn check_github_updates` (≈ 2236), `fn is_allowed_update_url` (≈ 2087), the `GITHUB_URL` fallback in `fn select_update_release` (≈ 2198), the `WEBSITE_URL` / `GITHUB_URL` / `RELEASES_URL` constants (≈ 3013–3016; their menu items are macOS-only), the fallbacks in `update-check.js` (lines 122–124), and the default `REPO` in `scripts/release.sh`.
+Repository URL sites: the page auto-check config (≈ 2164–2170), `fn check_github_updates` (≈ 2363), `fn is_allowed_update_url` (≈ 2214), the `GITHUB_URL` fallback in `fn select_update_release` (≈ 2325), the `WEBSITE_URL` / `GITHUB_URL` / `RELEASES_URL` constants (≈ 3233–3236; their menu items are macOS-only), the fallbacks in `update-check.js` (lines 122–124), and the default `REPO` in `scripts/release.sh`.
 
-To ship an update: bump `version` in `Cargo.toml`, add a `## X.Y.Z` section to `CHANGELOG.md`, and push tag `vX.Y.Z`. Installed copies pick it up within a day. To disable updates instead, delete the `window.__mdPreviewInstallUpdateCheck({ … });` call (≈ 2038–2044); the tests still pass.
+To ship an update: bump `version` in `Cargo.toml`, add a `## X.Y.Z` section to `CHANGELOG.md`, and push tag `vX.Y.Z`. Installed copies pick it up within a day. To disable updates instead, delete the `window.__mdPreviewInstallUpdateCheck({ … });` call (≈ 2164–2170); the tests still pass.
 
 ## Config directory
 
