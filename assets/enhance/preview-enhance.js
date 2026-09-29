@@ -207,9 +207,6 @@
     var tables = root.querySelectorAll('table');
     Array.prototype.forEach.call(tables, function(table) {
       if (hasClassInTree(table, 'mdp-table-wrap')) return;
-      var firstRow = table.querySelector('tr');
-      var cellCount = firstRow ? firstRow.children.length : 0;
-      if (cellCount < 4) return;
 
       var wrap = document.createElement('div');
       wrap.className = 'mdp-table-wrap';
