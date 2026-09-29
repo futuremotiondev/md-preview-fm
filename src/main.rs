@@ -750,6 +750,7 @@ const UPDATE_CHECK_JS: &str = include_str!("../assets/enhance/update-check.js");
 const KATEX_JS: &str = include_str!("../assets/katex/katex.min.js");
 const KATEX_CSS: &str = include_str!("../assets/katex/katex.inline.css");
 const MERMAID_JS: &str = include_str!("../assets/mermaid/mermaid.min.js");
+const FUTUREMOTION_FONTS_CSS: &str = include_str!("../assets/theme/futuremotion-fonts.css");
 const FUTUREMOTION_THEME_CSS: &str = include_str!("../assets/theme/futuremotion-theme.css");
 const MAX_RECENT_FILES: usize = 8;
 
@@ -1395,6 +1396,7 @@ body.editing #btn-print {{ display: none; }}
   #preview .mdp-table-wrap {{ width: auto; margin: 1em 0; transform: none; overflow: visible; }}
 }}
 	</style>
+<style id="futuremotion-fonts">{futuremotion_fonts_css}</style>
 <style id="futuremotion-theme">{futuremotion_theme_css}</style></head><body class="{body_class}">
 	<div class="tabbar" id="tabbar"><div class="tabs" id="tabs"></div><div class="doc-stats" id="doc-stats" aria-live="polite"></div><button class="tab-open" id="tab-open" type="button" title="{btn_new}" aria-label="{btn_new}">+</button></div>
 	<div class="toolbar">
@@ -2047,6 +2049,7 @@ window.__mdPreviewInstallUpdateCheck({{
 </body></html>"#,
         css_light = HLJS_LIGHT,
         css_dark = HLJS_DARK,
+        futuremotion_fonts_css = FUTUREMOTION_FONTS_CSS,
         futuremotion_theme_css = FUTUREMOTION_THEME_CSS,
         base_tag = base_tag,
         preview_html = preview_html,
@@ -2708,6 +2711,27 @@ mod tests {
             page.contains(FUTUREMOTION_THEME_CSS),
             "theme CSS must be embedded verbatim"
         );
+    }
+
+    #[test]
+    fn page_embeds_futuremotion_fonts_before_theme() {
+        let page = build_startup_page(&Strings::for_lang(Lang::En), false);
+        let builtin = page.find("@page {").expect("built-in stylesheet missing");
+        let fonts = page
+            .find(r#"<style id="futuremotion-fonts">"#)
+            .expect("futuremotion fonts stylesheet missing");
+        let theme = page
+            .find(r#"<style id="futuremotion-theme">"#)
+            .expect("futuremotion theme stylesheet missing");
+        assert!(builtin < fonts && fonts < theme, "fonts must load after built-in styles and before the theme");
+        assert!(page.contains(FUTUREMOTION_FONTS_CSS), "fonts CSS must be embedded verbatim");
+        for face in [
+            r#"font-family:"FM Inter";font-style:normal;font-weight:400;"#,
+            r#"font-family:"FM Inter";font-style:normal;font-weight:600;"#,
+            r#"font-family:"FM JetBrains Mono";font-style:normal;font-weight:100 800;"#,
+        ] {
+            assert!(FUTUREMOTION_FONTS_CSS.contains(face), "missing @font-face: {face}");
+        }
     }
 
     #[test]
