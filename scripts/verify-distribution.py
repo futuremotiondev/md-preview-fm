@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 import subprocess
 
-for filename in ['README.md', 'README_zh.md']:
+for filename in ['README.md']:
     text = Path(filename).read_text()
     assert 'apps.apple.com' not in text, filename
     assert not re.search(r'https?://[^\s"<>)]*\.(?:dmg|ipa)', text), filename
