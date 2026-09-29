@@ -112,6 +112,6 @@ Because the directory, lock and ProgID are all renamed, the fork runs independen
 
 - **macOS-only code in `src/main.rs`** (`#[cfg(target_os = "macos")]`): app-menu and About strings, `MDPreviewMenuController`, the Finder extension (`mdpreview://` scheme, `com.mdpreview.app` bundle id), `.app` path tests, and the `MD-Preview-macOS-universal.dmg` asset name. The fork does not build for macOS; renaming these only makes sense together with `bundle.sh`, `install.sh`, `release-sign.sh`, `scripts/generate-appcast.sh`, `scripts/verify-sparkle-update.sh` and `macos/`.
 - **`mobile/`**: the separate iOS and Android apps.
-- **Upstream's notes**: `AGENTS.md`, `LESSONS.md`. Upstream's website (`docs/`) and `README_zh.md` were removed, `README.md` was rewritten for the fork, and `CHANGELOG.md` restarted at 1.0.0 with a link to upstream's history.
+- **Upstream's notes**: `LESSONS.md`. Upstream's website (`docs/`), `README_zh.md` and `AGENTS.md` were removed, `README.md` was rewritten for the fork, and `CHANGELOG.md` restarted at 1.0.0 with a link to upstream's history.
 - **Upstream's line in `LICENSE`**: MIT requires keeping it; the fork's line sits beside it.
 - **Internal identifiers users never see**: the environment variables `MD_PREVIEW_CONFIG_DIR`, `MD_PREVIEW_BENCH` and `MD_PREVIEW_TEST_*`, the JavaScript globals `window.__mdPreview*`, and test temp-directory names. Renaming them would only add merge conflicts with upstream.

@@ -44,4 +44,4 @@ Close every running MD Preview FM window before launching a new build. Otherwise
 - [Build and branding](dev-docs/build-and-branding.md): building the exe, identity map, self-updater, config directory, what stays upstream-named
 - [Architecture](dev-docs/architecture.md): startup sequence, render pipeline, page enhancement, IPC, on-disk state
 
-Upstream's own notes are in Chinese: `AGENTS.md` (collaboration rules) and `LESSONS.md` (pitfalls). `CHANGELOG.md` is the fork's, starting at 1.0.0.
+Upstream's pitfall notes are in `LESSONS.md` (Chinese). `CHANGELOG.md` is the fork's, starting at 1.0.0.
