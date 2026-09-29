@@ -136,7 +136,7 @@ await page.locator('#btn-zoom-in').click();
 result = await page.evaluate(() => ({
   resetLabel: document.getElementById('btn-zoom-reset').textContent,
   scale: getComputedStyle(document.documentElement).getPropertyValue('--content-scale').trim(),
-  stored: localStorage.getItem('md-preview-content-zoom-v1'),
+  stored: localStorage.getItem('md-preview-fm-content-zoom-v1'),
   toolbarWidth: document.getElementById('btn-open').getBoundingClientRect().width,
 }));
 if (result.resetLabel !== '110%' || result.scale !== '1.1' ||

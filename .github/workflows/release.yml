@@ -35,13 +35,13 @@ jobs:
       - name: Package
         shell: bash
         run: |
-          cp target/release/md-preview.exe MD-Preview-windows-x64.exe
+          cp target/release/md-preview-fm.exe MD-Preview-FM-windows-x64.exe
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows
-          path: MD-Preview-windows-x64.exe
+          path: MD-Preview-FM-windows-x64.exe
 
   build-linux:
     runs-on: ubuntu-latest
@@ -62,14 +62,14 @@ jobs:
       - name: Package
         run: |
           mkdir -p dist
-          cp target/release/md-preview dist/
-          tar czf MD-Preview-linux-x64.tar.gz -C dist .
+          cp target/release/md-preview-fm dist/
+          tar czf MD-Preview-FM-linux-x64.tar.gz -C dist .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux-tar
-          path: MD-Preview-linux-x64.tar.gz
+          path: MD-Preview-FM-linux-x64.tar.gz
 
   publish-release:
     needs: [build-windows, build-linux]
@@ -100,6 +100,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            MD-Preview-windows-x64.exe
-            MD-Preview-linux-x64.tar.gz
+            MD-Preview-FM-windows-x64.exe
+            MD-Preview-FM-linux-x64.tar.gz
           body_path: RELEASE_NOTES.md

@@ -1,6 +1,11 @@
 [package]
-name = "md-preview"
-version = "1.4.2"
+name = "md-preview-fm"
+version = "1.0.0"
+authors = ["Futuremotion Studio"]
+description = "Restyled fork of md-preview to include better formatting, a new font stack, and further layout adjustments."
+repository = "https://github.com/futuremotiondev/md-preview-fm"
+homepage = "https://github.com/futuremotiondev/md-preview-fm"
+license-file = "LICENSE"
 edition = "2021"
 rust-version = "1.89"
 

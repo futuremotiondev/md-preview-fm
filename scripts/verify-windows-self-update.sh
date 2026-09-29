@@ -4,13 +4,13 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-grep -q 'MD-Preview-windows-x64' assets/enhance/update-check.js
+grep -q 'MD-Preview-FM-windows-x64' assets/enhance/update-check.js
 grep -q 'download_digest' assets/enhance/update-check.js
 grep -q 'Get-FileHash' src/main.rs
 grep -q 'Copy-Item -LiteralPath $tmp -Destination $target -Force' src/main.rs
 grep -q 'powershell.exe' src/main.rs
-grep -q 'MD-Preview-windows-x64.exe' .github/workflows/release.yml
-grep -q 'MD-Preview-windows-x64-Setup.exe' .github/workflows/release.yml && {
+grep -q 'MD-Preview-FM-windows-x64.exe' .github/workflows/release.yml
+grep -q 'MD-Preview-FM-windows-x64-Setup.exe' .github/workflows/release.yml && {
   echo "error: Windows setup installer should not be in the release workflow" >&2
   exit 1
 }
@@ -45,13 +45,13 @@ window.__mdPreviewInstallUpdateCheck({ currentVersion: '1.1.11', nativeUpdater: 
 window.__mdPreviewApplyUpdateRelease({
   tag_name: 'v1.1.12',
   assets: [{
-    name: 'MD-Preview-windows-x64.exe',
-    browser_download_url: 'https://github.com/vorojar/md-preview/releases/download/v1.1.12/MD-Preview-windows-x64.exe',
+    name: 'MD-Preview-FM-windows-x64.exe',
+    browser_download_url: 'https://github.com/futuremotiondev/md-preview-fm/releases/download/v1.1.12/MD-Preview-FM-windows-x64.exe',
     digest: 'sha256:' + 'a'.repeat(64)
   }]
 });
 button.click();
-if (!window.sent || !window.sent.includes('MD-Preview-windows-x64.exe') || !window.sent.includes('sha256:')) {
+if (!window.sent || !window.sent.includes('MD-Preview-FM-windows-x64.exe') || !window.sent.includes('sha256:')) {
   throw new Error(`bad update IPC: ${window.sent}`);
 }
 NODE

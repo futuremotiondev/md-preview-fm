@@ -58,7 +58,7 @@
       return /macos.*\.dmg$/i;
     }
     if (platform.indexOf('win') >= 0 || ua.indexOf('windows') >= 0) {
-      return /^MD-Preview-windows-x64\.exe$/i;
+      return /^MD-Preview-FM-windows-x64\.exe$/i;
     }
     if (platform.indexOf('linux') >= 0 || ua.indexOf('linux') >= 0) {
       return /linux.*\.tar\.gz$/i;
@@ -119,9 +119,9 @@
     if (!button) return;
 
     var label = config.buttonLabel || 'Update available';
-    var latestUrl = config.latestUrl || 'https://github.com/vorojar/md-preview/releases/latest';
-    var apiUrl = config.apiUrl || 'https://api.github.com/repos/vorojar/md-preview/releases/latest';
-    var storageKey = config.storageKey || 'md-preview:update-check';
+    var latestUrl = config.latestUrl || 'https://github.com/futuremotiondev/md-preview-fm/releases/latest';
+    var apiUrl = config.apiUrl || 'https://api.github.com/repos/futuremotiondev/md-preview-fm/releases/latest';
+    var storageKey = config.storageKey || 'md-preview-fm:update-check';
     var maxAgeMs = config.maxAgeMs || 24 * 60 * 60 * 1000;
     var timeoutMs = config.timeoutMs || 3500;
 

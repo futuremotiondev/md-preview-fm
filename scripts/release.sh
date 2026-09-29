@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-REPO="${MD_PREVIEW_GITHUB_REPO:-vorojar/md-preview}"
+REPO="${MD_PREVIEW_GITHUB_REPO:-futuremotiondev/md-preview-fm}"
 WORKFLOW="${MD_PREVIEW_RELEASE_WORKFLOW:-Release}"
 TAG="${1:-}"
 
@@ -118,8 +118,8 @@ find_release_run() {
 
 require_release_assets() {
   local expected=(
-    MD-Preview-linux-x64.tar.gz
-    MD-Preview-windows-x64.exe
+    MD-Preview-FM-linux-x64.tar.gz
+    MD-Preview-FM-windows-x64.exe
   )
   local assets
   assets="$(gh release view "$TAG" -R "$REPO" --json assets --jq '.assets[].name')"

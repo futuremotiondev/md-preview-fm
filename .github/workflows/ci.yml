@@ -27,7 +27,7 @@ jobs:
       - name: Verify GUI subsystem (no console window)
         shell: pwsh
         run: |
-          $exe = "target/release/md-preview.exe"
+          $exe = "target/release/md-preview-fm.exe"
           if (-not (Test-Path $exe)) { throw "exe missing: $exe" }
           $bytes = [System.IO.File]::ReadAllBytes($exe)
           $peOffset = [System.BitConverter]::ToInt32($bytes, 0x3C)
@@ -38,7 +38,7 @@ jobs:
       - name: Verify icon resource is embedded
         shell: pwsh
         run: |
-          $exe = "target/release/md-preview.exe"
+          $exe = "target/release/md-preview-fm.exe"
           # winresource splits icon.ico into per-size RT_ICON entries (PNG bytes are preserved).
           # Count PNG signatures inside the exe — our ico has 6 PNG-encoded images.
           $bytes = [System.IO.File]::ReadAllBytes($exe)
@@ -54,12 +54,12 @@ jobs:
         run: |
           Select-String -Path src/main.rs -Pattern 'Get-FileHash' | Out-Null
           Select-String -Path src/main.rs -Pattern 'Copy-Item -LiteralPath \$tmp -Destination \$target -Force' | Out-Null
-          Select-String -Path assets/enhance/update-check.js -Pattern 'MD-Preview-windows-x64\\.exe' | Out-Null
+          Select-String -Path assets/enhance/update-check.js -Pattern 'MD-Preview-FM-windows-x64\\.exe' | Out-Null
 
       - uses: actions/upload-artifact@v4
         with:
-          name: md-preview-windows-x64
-          path: target/release/md-preview.exe
+          name: md-preview-fm-windows-x64
+          path: target/release/md-preview-fm.exe
 
   build-linux:
     runs-on: ubuntu-latest

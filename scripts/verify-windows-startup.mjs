@@ -8,7 +8,7 @@ import { createServer } from 'node:net';
 import assert from 'node:assert/strict';
 const { chromium } = createRequire(import.meta.url)('playwright');
 if (process.platform !== 'win32') throw new Error('This test requires real Windows WebView2');
-const exe = resolve(process.argv[2] || 'target/release/md-preview.exe');
+const exe = resolve(process.argv[2] || 'target/release/md-preview-fm.exe');
 const root = await mkdtemp(join(tmpdir(), 'mdp-startup-'));
 const large = join(root, '中文 大文件.md');
 const start = '# START_MARKER\n\n', end = '\nEND_MARKER\n';
@@ -23,7 +23,7 @@ async function port() {
 }
 async function run(name, args, saved, check) {
  const config=join(root,name); await mkdir(config);
- await writeFile(join(config,'.md-preview-registered'),'');
+ await writeFile(join(config,'.md-preview-fm-registered'),'');
  if(saved) await writeFile(join(config,'session.json'),JSON.stringify({version:1,active:0,tabs:saved}));
  // Stale endpoint files must not prevent a fresh primary process.
  await writeFile(join(config,'instance.lock'),'stale');
@@ -56,7 +56,7 @@ async function run(name, args, saved, check) {
   console.log(`PASS ${name}`);
  } catch(error) {
   const diagnostic=spawnSync('powershell',['-NoProfile','-Command',
-   "Get-Process md-preview,msedgewebview2 -ErrorAction SilentlyContinue | Select-Object Id,ProcessName,MainWindowTitle | Format-Table -AutoSize; Get-CimInstance Win32_Process -Filter 'name = \"msedgewebview2.exe\"' | Select-Object CommandLine | Format-List"],{encoding:'utf8'});
+   "Get-Process md-preview-fm,msedgewebview2 -ErrorAction SilentlyContinue | Select-Object Id,ProcessName,MainWindowTitle | Format-Table -AutoSize; Get-CimInstance Win32_Process -Filter 'name = \"msedgewebview2.exe\"' | Select-Object CommandLine | Format-List"],{encoding:'utf8'});
   console.error(diagnostic.stdout, diagnostic.stderr);
   throw error;
  } finally {

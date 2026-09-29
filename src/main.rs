@@ -122,7 +122,7 @@ fn is_help_arg(arg: &str) -> bool {
 
 fn print_help() {
     println!(
-        "MD Preview {}\n\nUsage:\n  md-preview [file.md]\n\nOptions:\n  -h, --help    Show this help message",
+        "MD Preview FM {}\n\nUsage:\n  md-preview-fm [file.md]\n\nOptions:\n  -h, --help    Show this help message",
         env!("CARGO_PKG_VERSION")
     );
 }
@@ -238,14 +238,14 @@ fn config_dir() -> PathBuf {
             .or_else(|| std::env::var_os("APPDATA"))
             .map(PathBuf::from)
             .unwrap_or_else(|| PathBuf::from("."))
-            .join("md-preview")
+            .join("md-preview-fm")
     }
     #[cfg(not(target_os = "windows"))]
     {
         std::env::var_os("HOME")
             .map(PathBuf::from)
             .unwrap_or_default()
-            .join(".config/md-preview")
+            .join(".config/md-preview-fm")
     }
 }
 
@@ -299,7 +299,7 @@ fn confirm_open_update(tag: &str) -> bool {
             .set_level(rfd::MessageLevel::Info)
             .set_title("Update Available")
             .set_description(format!(
-                "MD Preview {tag} is available. Open the release page to download it?"
+                "MD Preview FM {tag} is available. Open the release page to download it?"
             ))
             .set_buttons(rfd::MessageButtons::OkCancelCustom(
                 "Open Release".to_string(),
@@ -1466,7 +1466,7 @@ body.editing #btn-print {{ display: none; }}
 	  var lastFindQuery = '';
 	  var STAT_WORDS = '{stat_words_js}';
 	  var STAT_CHARS = '{stat_chars_js}';
-	  var ZOOM_STORAGE_KEY = 'md-preview-content-zoom-v1';
+	  var ZOOM_STORAGE_KEY = 'md-preview-fm-content-zoom-v1';
 	  var ZOOM_MIN = 70;
 	  var ZOOM_MAX = 200;
 	  var ZOOM_STEP = 10;
@@ -2037,8 +2037,8 @@ window.__mdPreviewInstallUpdateCheck({{
   currentVersion: '{app_version}',
   buttonLabel: '{btn_update_js}',
   nativeUpdater: {native_updater},
-  apiUrl: 'https://api.github.com/repos/vorojar/md-preview/releases?per_page=20',
-  latestUrl: 'https://github.com/vorojar/md-preview/releases/latest'
+  apiUrl: 'https://api.github.com/repos/futuremotiondev/md-preview-fm/releases?per_page=20',
+  latestUrl: 'https://github.com/futuremotiondev/md-preview-fm/releases/latest'
 }});
 {test_update_release_js}
 </script>
@@ -2082,9 +2082,9 @@ fn escape_js(s: &str) -> String {
 }
 
 fn is_allowed_update_url(url: &str) -> bool {
-    url == "https://github.com/vorojar/md-preview/releases/latest"
-        || url.starts_with("https://github.com/vorojar/md-preview/releases/tag/")
-        || url.starts_with("https://github.com/vorojar/md-preview/releases/download/")
+    url == "https://github.com/futuremotiondev/md-preview-fm/releases/latest"
+        || url.starts_with("https://github.com/futuremotiondev/md-preview-fm/releases/tag/")
+        || url.starts_with("https://github.com/futuremotiondev/md-preview-fm/releases/download/")
 }
 
 fn update_current_version() -> String {
@@ -2158,9 +2158,9 @@ fn preferred_update_asset_name() -> &'static str {
     if cfg!(target_os = "macos") {
         "MD-Preview-macOS-universal.dmg"
     } else if cfg!(target_os = "windows") {
-        "MD-Preview-windows-x64.exe"
+        "MD-Preview-FM-windows-x64.exe"
     } else {
-        "MD-Preview-linux-x64.tar.gz"
+        "MD-Preview-FM-linux-x64.tar.gz"
     }
 }
 
@@ -2240,7 +2240,7 @@ fn check_github_updates() -> UpdateCheckResult {
             "10",
             "-H",
             "Accept: application/vnd.github+json",
-            "https://api.github.com/repos/vorojar/md-preview/releases?per_page=20",
+            "https://api.github.com/repos/futuremotiondev/md-preview-fm/releases?per_page=20",
         ])
         .output();
     let Ok(output) = output else {
@@ -2276,8 +2276,8 @@ fn test_update_release_js() -> String {
         return format!(
             r#"if(window.__mdPreviewApplyUpdateRelease)window.__mdPreviewApplyUpdateRelease({{
   tag_name: '{tag}',
-  html_url: 'https://github.com/vorojar/md-preview/releases/tag/{tag}',
-  download_url: 'https://github.com/vorojar/md-preview/releases/download/{tag}/MD-Preview-macOS-universal.dmg'
+  html_url: 'https://github.com/futuremotiondev/md-preview-fm/releases/tag/{tag}',
+  download_url: 'https://github.com/futuremotiondev/md-preview-fm/releases/download/{tag}/MD-Preview-macOS-universal.dmg'
 }});"#,
             tag = escaped_tag
         );
@@ -2632,7 +2632,7 @@ mod tests {
         assert!(page.contains("id=\"doc-stats\""));
         assert!(page.contains("updateDocumentStats"));
         assert!(page.contains("restoreScrollProgress"));
-        assert!(page.contains("md-preview-content-zoom-v1"));
+        assert!(page.contains("md-preview-fm-content-zoom-v1"));
         assert!(page.contains("id=\"btn-zoom-in\""));
         assert!(page.contains("id=\"btn-zoom-out\""));
         assert!(page.contains("id=\"btn-zoom-reset\""));
@@ -2696,7 +2696,10 @@ mod tests {
     #[test]
     fn update_download_urls_are_allowed() {
         assert!(is_allowed_update_url(
-            "https://github.com/vorojar/md-preview/releases/download/v1.1.9/MD-Preview-macOS-universal.dmg"
+            "https://github.com/futuremotiondev/md-preview-fm/releases/download/v1.0.1/MD-Preview-FM-windows-x64.exe"
+        ));
+        assert!(!is_allowed_update_url(
+            "https://github.com/vorojar/md-preview/releases/download/v1.4.3/MD-Preview-windows-x64.exe"
         ));
         assert!(!is_allowed_update_url(
             "https://github.com/other/project/releases/download/v1.0.0/app.dmg"
@@ -2903,7 +2906,7 @@ fn load_window_icon() -> Option<tao::window::Icon> {
 #[cfg(target_os = "macos")]
 fn register_as_default(_lang: Lang) {
     use std::process::Command;
-    let marker = config_dir().join(".md-preview-registered");
+    let marker = config_dir().join(".md-preview-fm-registered");
     if marker.exists() {
         return;
     }
@@ -2931,7 +2934,7 @@ fn register_as_default(_lang: Lang) {
     use winreg::RegKey;
 
     let marker_dir = config_dir();
-    let marker = marker_dir.join(".md-preview-registered");
+    let marker = marker_dir.join(".md-preview-fm-registered");
     if marker.exists() {
         return;
     }
@@ -2940,10 +2943,10 @@ fn register_as_default(_lang: Lang) {
         return;
     };
     let exe_str = exe.to_string_lossy().to_string();
-    let progid = "MDPreview.md";
+    let progid = "MDPreviewFM.md";
     let hkcu = RegKey::predef(HKEY_CURRENT_USER);
 
-    // Advertise MD Preview as a choice for these extensions.
+    // Advertise MD Preview FM as a choice for these extensions.
     for ext in [".md", ".markdown", ".mdown", ".mkd"] {
         let path = format!(r"Software\Classes\{ext}\OpenWithProgids");
         if let Ok((key, _)) = hkcu.create_subkey(&path) {
@@ -2968,7 +2971,7 @@ fn register_as_default(_lang: Lang) {
     if let Some(exe_name) = exe.file_name().map(|n| n.to_string_lossy().to_string()) {
         let app_root = format!(r"Software\Classes\Applications\{exe_name}");
         if let Ok((k, _)) = hkcu.create_subkey(&app_root) {
-            let _ = k.set_value("FriendlyAppName", &"MD Preview".to_string());
+            let _ = k.set_value("FriendlyAppName", &"MD Preview FM".to_string());
         }
         if let Ok((k, _)) = hkcu.create_subkey(format!(r"{app_root}\shell\open\command")) {
             let _ = k.set_value("", &format!("\"{exe_str}\" \"%1\""));
@@ -2982,7 +2985,7 @@ fn register_as_default(_lang: Lang) {
 
     let _ = fs::create_dir_all(&marker_dir);
     let _ = fs::write(&marker, "");
-    // Intentionally no dialog: users can pick MD Preview via "Open with"
+    // Intentionally no dialog: users can pick MD Preview FM via "Open with"
     // whenever they want, and Win10+ blocks silent default-handler changes
     // anyway — asking them to click through Settings on first launch is noise.
 }
@@ -2990,10 +2993,10 @@ fn register_as_default(_lang: Lang) {
 #[cfg(not(any(target_os = "macos", target_os = "windows")))]
 fn register_as_default(_lang: Lang) {}
 
-const WEBSITE_URL: &str = "https://vorojar.github.io/md-preview/";
-const GITHUB_URL: &str = "https://github.com/vorojar/md-preview";
+const WEBSITE_URL: &str = "https://github.com/futuremotiondev/md-preview-fm";
+const GITHUB_URL: &str = "https://github.com/futuremotiondev/md-preview-fm";
 #[cfg(target_os = "macos")]
-const RELEASES_URL: &str = "https://github.com/vorojar/md-preview/releases/latest";
+const RELEASES_URL: &str = "https://github.com/futuremotiondev/md-preview-fm/releases/latest";
 
 #[cfg(target_os = "macos")]
 thread_local! {
@@ -3708,7 +3711,7 @@ mod windows_updater {
         let Some(url) = download_url.filter(|url| is_allowed_update_url(url)) else {
             return false;
         };
-        if !url.ends_with("/MD-Preview-windows-x64.exe") {
+        if !url.ends_with("/MD-Preview-FM-windows-x64.exe") {
             return false;
         }
         let Some(expected_digest) = digest.filter(|digest| valid_digest(digest)) else {
@@ -3734,7 +3737,7 @@ $url = {url}
 $expected = {expected}
 $script = {script}
 $pidToWait = {pid}
-$tmp = Join-Path ([IO.Path]::GetTempPath()) ('md-preview-update-' + [guid]::NewGuid().ToString() + '.exe')
+$tmp = Join-Path ([IO.Path]::GetTempPath()) ('md-preview-fm-update-' + [guid]::NewGuid().ToString() + '.exe')
 Invoke-WebRequest -Uri $url -OutFile $tmp -UseBasicParsing
 $actual = 'sha256:' + (Get-FileHash -LiteralPath $tmp -Algorithm SHA256).Hash.ToLowerInvariant()
 if ($actual -ne $expected.ToLowerInvariant()) {{
@@ -4141,9 +4144,9 @@ fn update_window_title(window: &Window, session: &DocumentSession) {
                 .file_name()
                 .map(|name| name.to_string_lossy().to_string())
                 .unwrap_or_else(|| tab.path.to_string_lossy().to_string());
-            format!("{}{} — MD Preview", if tab.dirty { "• " } else { "" }, name)
+            format!("{}{} — MD Preview FM", if tab.dirty { "• " } else { "" }, name)
         })
-        .unwrap_or_else(|| "MD Preview".to_string());
+        .unwrap_or_else(|| "MD Preview FM".to_string());
     window.set_title(&title);
 }
 
@@ -4277,7 +4280,7 @@ fn main() {
     };
     bench_log("main_start");
 
-    // CLI: md-preview [--edit] [file.md ...]
+    // CLI: md-preview-fm [--edit] [file.md ...]
     let args = std::env::args().skip(1).collect::<Vec<_>>();
     if args.iter().any(|arg| is_help_arg(arg)) {
         print_help();
@@ -4318,7 +4321,7 @@ fn main() {
             Ok(Some(primary)) => Some(primary),
             Ok(None) => return,
             Err(error) => {
-                show_warning_dialog("Could Not Open MD Preview", &error.to_string());
+                show_warning_dialog("Could Not Open MD Preview FM", &error.to_string());
                 return;
             }
         }
@@ -4352,8 +4355,8 @@ fn main() {
     let title = initial_session
         .active()
         .and_then(|tab| tab.path.file_name())
-        .map(|name| format!("{} — MD Preview", name.to_string_lossy()))
-        .unwrap_or_else(|| "MD Preview".to_string());
+        .map(|name| format!("{} — MD Preview FM", name.to_string_lossy()))
+        .unwrap_or_else(|| "MD Preview FM".to_string());
 
     let geom = load_window_geom()
         .filter(|g| geom_visible(g, &event_loop))
@@ -4552,7 +4555,7 @@ fn main() {
                     } else {
                         show_warning_dialog(
                             "Update Unavailable",
-                            "MD Preview could not start the updater for this release.",
+                            "MD Preview FM could not start the updater for this release.",
                         );
                     }
                 }
@@ -4646,7 +4649,7 @@ fn main() {
         Ok(webview) => webview,
         Err(error) => {
             eprintln!("Could not initialize WebView: {error}");
-            show_warning_dialog("Could Not Open MD Preview", &error.to_string());
+            show_warning_dialog("Could Not Open MD Preview FM", &error.to_string());
             return;
         }
     };
@@ -4997,7 +5000,7 @@ fn main() {
                 }
                 UpdateCheckResult::UpToDate => {
                     show_info_dialog(
-                        "MD Preview Is Up to Date",
+                        "MD Preview FM Is Up to Date",
                         &format!(
                             "You are using the latest version: {}.",
                             env!("CARGO_PKG_VERSION")
@@ -5007,7 +5010,7 @@ fn main() {
                 UpdateCheckResult::Failed => {
                     show_warning_dialog(
                         "Could Not Check for Updates",
-                        "MD Preview could not reach the update service. Please try again later.",
+                        "MD Preview FM could not reach the update service. Please try again later.",
                     );
                 }
             },
