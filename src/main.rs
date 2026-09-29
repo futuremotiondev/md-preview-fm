@@ -446,7 +446,7 @@ fn embed_local_images<'a>(events: Vec<MdEvent<'a>>, base_dir: Option<&Path>) -> 
         return events;
     };
 
-    events
+    join_html_block_lines(events)
         .into_iter()
         .map(|event| match event {
             MdEvent::Start(Tag::Image {
@@ -463,9 +463,133 @@ fn embed_local_images<'a>(events: Vec<MdEvent<'a>>, base_dir: Option<&Path>) -> 
                     id,
                 })
             }
+            MdEvent::Html(html) => MdEvent::Html(embed_html_img_sources(html, base_dir)),
+            MdEvent::InlineHtml(html) => {
+                MdEvent::InlineHtml(embed_html_img_sources(html, base_dir))
+            }
             _ => event,
         })
         .collect()
+}
+
+// pulldown-cmark emits an HTML block one line per event. Joining each run keeps
+// the rendered output identical while letting a tag written across lines be
+// rewritten as a whole.
+fn join_html_block_lines<'a>(events: Vec<MdEvent<'a>>) -> Vec<MdEvent<'a>> {
+    let mut joined: Vec<MdEvent<'a>> = Vec::with_capacity(events.len());
+    for event in events {
+        if let MdEvent::Html(line) = &event {
+            if let Some(MdEvent::Html(previous)) = joined.last_mut() {
+                let mut block = previous.to_string();
+                block.push_str(line);
+                *previous = CowStr::from(block);
+                continue;
+            }
+        }
+        joined.push(event);
+    }
+    joined
+}
+
+fn embed_html_img_sources<'a>(html: CowStr<'a>, base_dir: &Path) -> CowStr<'a> {
+    match rewrite_html_img_sources(&html, base_dir) {
+        Some(rewritten) => CowStr::from(rewritten),
+        None => html,
+    }
+}
+
+// Replaces the src of each <img> tag with a data URL when it names a local
+// image that local_image_data_url accepts. Returns None when nothing changed.
+fn rewrite_html_img_sources(html: &str, base_dir: &Path) -> Option<String> {
+    let bytes = html.as_bytes();
+    let mut out = String::new();
+    let mut copied = 0;
+    let mut search = 0;
+    while let Some(offset) = html[search..].find('<') {
+        let start = search + offset;
+        let names_img =
+            bytes.len() >= start + 4 && bytes[start + 1..start + 4].eq_ignore_ascii_case(b"img");
+        let Some((tag_end, src)) = names_img.then(|| parse_img_tag(html, start)).flatten() else {
+            search = start + 1;
+            continue;
+        };
+        if let Some((token_start, token_end, value)) = src {
+            if let Some(data_url) = local_image_data_url(base_dir, value) {
+                out.push_str(&html[copied..token_start]);
+                out.push('"');
+                out.push_str(&data_url);
+                out.push('"');
+                copied = token_end;
+            }
+        }
+        search = tag_end;
+    }
+    if copied == 0 {
+        return None;
+    }
+    out.push_str(&html[copied..]);
+    Some(out)
+}
+
+// Parses the <img ...> tag whose "<" is at `start`. Returns the index just past
+// its ">" and, when present, the first src attribute as (value token start,
+// value token end, value), where the token includes any quotes. Returns None for
+// other tag names (e.g. <imgx>) and for unterminated tags.
+fn parse_img_tag(html: &str, start: usize) -> Option<(usize, Option<(usize, usize, &str)>)> {
+    let bytes = html.as_bytes();
+    let mut i = start + 4;
+    if i < bytes.len() && !matches!(bytes[i], b'/' | b'>') && !bytes[i].is_ascii_whitespace() {
+        return None;
+    }
+    let mut src = None;
+    loop {
+        while i < bytes.len() && (bytes[i].is_ascii_whitespace() || bytes[i] == b'/') {
+            i += 1;
+        }
+        if i >= bytes.len() {
+            return None;
+        }
+        if bytes[i] == b'>' {
+            return Some((i + 1, src));
+        }
+        let name_start = i;
+        while i < bytes.len()
+            && !matches!(bytes[i], b'=' | b'>' | b'/')
+            && !bytes[i].is_ascii_whitespace()
+        {
+            i += 1;
+        }
+        let name = &html[name_start..i];
+        if name.is_empty() {
+            i += 1;
+            continue;
+        }
+        while i < bytes.len() && bytes[i].is_ascii_whitespace() {
+            i += 1;
+        }
+        if i >= bytes.len() || bytes[i] != b'=' {
+            continue;
+        }
+        i += 1;
+        while i < bytes.len() && bytes[i].is_ascii_whitespace() {
+            i += 1;
+        }
+        let token_start = i;
+        let value = if i < bytes.len() && matches!(bytes[i], b'"' | b'\'') {
+            let quote = bytes[i] as char;
+            let close = i + 1 + html[i + 1..].find(quote)?;
+            i = close + 1;
+            &html[token_start + 1..close]
+        } else {
+            while i < bytes.len() && bytes[i] != b'>' && !bytes[i].is_ascii_whitespace() {
+                i += 1;
+            }
+            &html[token_start..i]
+        };
+        if src.is_none() && name.eq_ignore_ascii_case("src") {
+            src = Some((token_start, i, value));
+        }
+    }
 }
 
 fn local_image_data_url(base_dir: &Path, url: &str) -> Option<String> {
@@ -2420,6 +2544,78 @@ mod tests {
 
         assert!(html.contains(r#"<img src="../secret.png" alt="secret" />"#));
         assert!(!html.contains("data:image/png"));
+        let _ = fs::remove_dir_all(dir);
+    }
+
+    fn temp_dir_with_pixel(name: &str) -> PathBuf {
+        let dir = temp_test_dir(name);
+        let assets = dir.join("assets");
+        fs::create_dir_all(&assets).unwrap();
+        fs::write(assets.join("pixel.png"), b"abc").unwrap();
+        dir
+    }
+
+    #[test]
+    fn html_img_tags_embed_local_images_in_html_blocks() {
+        let dir = temp_dir_with_pixel("html-image-block");
+
+        let html = md_to_html_with_base(
+            "<div align=\"center\">\n  <img src=\"assets/pixel.png\" alt=\"icon\" width=\"96\">\n  <h1>Title</h1>\n</div>\n",
+            Some(&dir),
+        );
+
+        assert!(html.contains(r#"<img src="data:image/png;base64,YWJj" alt="icon" width="96">"#));
+        assert!(html.contains("<h1>Title</h1>"));
+        let _ = fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn html_img_tags_embed_when_the_tag_spans_lines() {
+        let dir = temp_dir_with_pixel("html-image-multiline");
+
+        let html = md_to_html_with_base("<p>\n<img\n  src=\"assets/pixel.png\"\n  alt=\"a\">\n</p>\n", Some(&dir));
+
+        assert!(html.contains("<img\n  src=\"data:image/png;base64,YWJj\"\n  alt=\"a\">"));
+        let _ = fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn html_img_tags_embed_inline_in_any_quote_style_and_case() {
+        let dir = temp_dir_with_pixel("html-image-inline");
+
+        let html = md_to_html_with_base(
+            "A <img src='assets/pixel.png' alt='s'> B <img src=assets/pixel.png alt=u> C <IMG SRC=\"assets/pixel.png\">",
+            Some(&dir),
+        );
+
+        assert!(html.contains(r#"<img src="data:image/png;base64,YWJj" alt='s'>"#));
+        assert!(html.contains(r#"<img src="data:image/png;base64,YWJj" alt=u>"#));
+        assert!(html.contains(r#"<IMG SRC="data:image/png;base64,YWJj">"#));
+        assert!(!html.contains("assets/pixel.png"));
+        let _ = fs::remove_dir_all(dir);
+    }
+
+    #[test]
+    fn html_img_tags_keep_disallowed_missing_and_non_img_sources() {
+        let dir = temp_dir_with_pixel("html-image-untouched");
+        let md = concat!(
+            "x <img src=\"../secret.png\"> <img src=\"C:/images/a.png\"> <img src=\"https://example.com/a.png\">",
+            " <img src=\"assets/missing.png\"> <script src=\"assets/pixel.png\"></script> <imgx src=\"assets/pixel.png\">"
+        );
+
+        let html = md_to_html_with_base(md, Some(&dir));
+
+        assert!(!html.contains("data:image"));
+        for src in [
+            r#"<img src="../secret.png">"#,
+            r#"<img src="C:/images/a.png">"#,
+            r#"<img src="https://example.com/a.png">"#,
+            r#"<img src="assets/missing.png">"#,
+            r#"<script src="assets/pixel.png">"#,
+            r#"<imgx src="assets/pixel.png">"#,
+        ] {
+            assert!(html.contains(src), "expected untouched: {src}");
+        }
         let _ = fs::remove_dir_all(dir);
     }
 
