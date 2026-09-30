@@ -8,3 +8,4 @@ mobile/android/build
 mobile/android/app/build
 *.code-workspace
 app-reference/
+.claude/.dirty-marker
