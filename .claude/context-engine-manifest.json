@@ -1,0 +1,154 @@
+{
+  "schema": 2,
+  "engineVersion": "2026.09.29.2",
+  "installedUtc": "2026-09-30T06:58:59Z",
+  "stack": "rust",
+  "chain": [
+    "rust"
+  ],
+  "tokens": {
+    "ENGINE_REPO_URL": "C:\\Users\\futur\\.claude\\skills\\fm-init-context-engine\\references\\fm-context-engine-scaffold",
+    "MAIN_BRANCH": "master",
+    "PRIMARY_EXT": "rs",
+    "PROJECT_NAME": "MD Preview FM",
+    "REPO_DIR": "rust-md-preview-fm",
+    "REPO_URL": "https://github.com/futuremotiondev/md-preview-fm"
+  },
+  "files": {
+    ".claude/commands/archive-spec.md": "26471CCE6CD69920F23822AA05684179758C22FC72716874878EF9A695F51736",
+    ".claude/commands/new-adr.md": "040787965B2655F365CE1A2F7C1A3ECF1AE3B7D465E7977AE0396D25FD5BF300",
+    ".claude/commands/new-spec.md": "976331F57184333AABE3759B166BDB84FF5A13C8D3DC930D0ABD333A727A3ED1",
+    ".claude/commands/refresh-context.md": "09C40F311602272BF718FF52620D59D46F703AFD7042C83CFF550FF879C81E3E",
+    ".claude/commands/state-of-project.md": "639F1944A8BFDC228A7A829805EDA0335704BE397820DCC75CFFEC6B1516ECF6",
+    ".claude/commands/validate-context.md": "B0B9930A20EA32E8C93BA32DCFCD02CF5AE0CA7F05F3AB1304410A1438864F7F",
+    ".claude/context-engine/README.md": "9E17FE37024086CD03E2D399F9AC79DF521DEDDA0EBF6C48D10811AC71E37EF3",
+    ".claude/hooks/post-edit-watch.ps1": "5346F0F158E7BA03B814EF889C16826F9C4948F13E11761FD1401DC7B773753E",
+    ".claude/hooks/session-start.ps1": "5BED5E2B69B07905BBD6F8ED8A115E5F8CDCC88EDF46AF730D7974F2B81296A8",
+    ".claude/skills/context-keeper/SKILL.md": "276C2D7321F64B9BA60A5761B8C9ED9849E1A40544BF59542CC42067A2F9D79B",
+    ".githooks/commit-msg": "B8ED0391D2A70036C1BBE87CD4C2402D64B6296180E2022F3575DFC6DC57A4B6"
+  },
+  "seeds": {
+    ".claude/context-engine.psd1": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "30F6211A079F8B8CF06E71BD7FABE5F2ED0C8249693E83DA5F8CB1547497F50A"
+    },
+    ".claude/rules/rust-boundaries.md": {
+      "source": "rust",
+      "engineVersion": "2026.09.29.2",
+      "hash": "B62083E98354F35336DA691D8836A307E06A6E71C39999C3626FB1A46046E7AD"
+    },
+    "CLAUDE.md": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "2120C34E98BC3F4C21AD4436E3CAF358D464F4BDA9A44140E6F7E23796B99963"
+    },
+    "Context/adr/0001-adopt-context-engine.md": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "9E87592BC16217496DAFD9451CA27BCF4B344441F239D4289D689D0991233689"
+    },
+    "Context/adr/README.md": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "44042D298573B6D46D7DF3AAA2AB7025D2ED19F384FB4E852C86DF4787FE6373"
+    },
+    "Context/architecture/README.md": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "B8020A3386C4ED16D43F3533BEDA9FCD124D6E9F120B9258C5D918288E8B1BD8"
+    },
+    "Context/conventions/agent-rules.md": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "364106596233E5E8ACA2790BE56C2DEE51BACD23BA718B51A72312B657348C63"
+    },
+    "Context/conventions/README.md": {
+      "source": "rust",
+      "engineVersion": "2026.09.29.2",
+      "hash": "49CE6773CD1285DD198BDF11564B78DCF78FC02D09FC70E11D5495D4B206D7B9"
+    },
+    "Context/conventions/rust-style.md": {
+      "source": "rust",
+      "engineVersion": "2026.09.29.2",
+      "hash": "54F38246F1587B25E4B5D33DEC66FF7850246937F80A0F53A35272DD98805A83"
+    },
+    "Context/generated/README.md": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "CF5B0812425821C25606E2CBF95ACF3A492C1AC49A1440191D09D3ED3EAC6A7A"
+    },
+    "Context/insights/_inbox/.gitkeep": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    "Context/insights/README.md": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "D69BA096C927E3785BB9540D2711E7891FCCE2E502E8B92C5672E8DF9C4A7014"
+    },
+    "Context/README.md": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "6D7DB222209E060A3C16FD039B227604D44EE5178CDDFA809986B9DDA721BAC5"
+    },
+    "Context/roadmap/archive/.gitkeep": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    "Context/roadmap/current.md": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "418A50AFF7D35BD25621D963BED69BDAA26F7FEF8878C8AA3A24C45F8A8B30C2"
+    },
+    "Context/scripts/README.md": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "A0F97F6282F7F3A1875BFEA2B7D0121A7518E477E11239AE6BC5DB28160738C8"
+    },
+    "Context/specs/active/.gitkeep": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    "Context/specs/archive/.gitkeep": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+    },
+    "Context/specs/README.md": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "2CA25FBFFA1A9856E894F1C4572856717C9481B33891977F195F612ECBE2C74B"
+    },
+    "Context/USAGE.md": {
+      "source": "core",
+      "engineVersion": "2026.09.29.2",
+      "hash": "2863A00480A2E392CE17F4B979A5D3E56A12D48A0E7E6F29FF283505B0A322FB"
+    }
+  },
+  "configDefaults": {
+    "PublicSurface": "A new pub item reachable from the crate root (lib.rs), or a new extern \"C\" export",
+    "DirtyHint": "Rust source or Cargo manifests changed without a verifying build. Run cargo build (or cargo check), then delete .claude/.dirty-marker.",
+    "Watches": [
+      {
+        "Glob": "**/build.rs",
+        "Action": "MarkDirty",
+        "Hint": "run cargo build (build scripts re-run at build time)"
+      },
+      {
+        "Glob": "**/*.rs",
+        "Action": "MarkDirty",
+        "Hint": "run cargo build (or cargo check) to verify"
+      },
+      {
+        "Glob": "**/Cargo.toml",
+        "Action": "MarkDirty",
+        "Hint": "run cargo build to re-resolve dependencies and verify"
+      }
+    ]
+  },
+  "optOut": []
+}

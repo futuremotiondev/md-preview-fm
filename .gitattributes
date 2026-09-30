@@ -1,1 +1,6 @@
 assets/mermaid/mermaid.min.js binary
+# Written by the context-engine: these paths are generated as LF, so pin them
+.githooks/commit-msg text eol=lf
+.claude/** text eol=lf
+Context/** text eol=lf
+.gitattributes text eol=lf
