@@ -50,9 +50,9 @@ One fork change lives outside these files: `assets/enhance/preview-enhance.js` w
 
 ### How the file is organized
 
-1. **Tokens** in `:root`: CSS custom properties (`--fm-*`) for fonts, code weight and ligatures, text size, line height, letter spacing, block spacing, heading sizes, tracking and spacing, code, tables, layout and colors. Each has a short comment, and the file header summarizes the design direction.
-2. **Dark tokens**: `@media (prefers-color-scheme: dark)` redefines only the color tokens.
-3. **Rules** that apply the tokens to upstream's selectors, grouped as page and layout, document text, headings, code, tables, and print.
+1. **Tokens** in `:root`: CSS custom properties (`--fm-*`) for fonts, code weight and ligatures, text size, line height, letter spacing, block spacing, heading sizes, tracking and spacing, code, tables, layout, colors and syntax colors (`--fm-syntax-*`). Each has a short comment, and the file header summarizes the design direction.
+2. **Dark tokens**: `@media (prefers-color-scheme: dark)` redefines only the color tokens, syntax colors included.
+3. **Rules** that apply the tokens to upstream's selectors, grouped as page and layout, document text, headings, code (with syntax colors), tables, and print.
 
 Most restyling is a token edit. Add new rules below the token blocks when a token doesn't cover what you want.
 
@@ -61,6 +61,7 @@ Most restyling is a token edit. Add new rules below the token blocks when a toke
 - The fork sheet loads after the built-in rules, so a selector of **equal specificity** wins by source order. Upstream styles the document with `#preview <element>` selectors; a bare `h1 { }` loses to `#preview h1`.
 - Upstream's dark block marks the `#preview pre` background `!important`, so the fork's code-block background carries `!important` too.
 - Upstream's dark inline code uses `#preview code:not(pre code)`, which is more specific than `#preview code`. The fork uses that exact selector for inline code.
+- The highlight.js sheets style tokens with bare classes (`.hljs-keyword`). The fork's `#preview .hljs-*` rules outrank them, so the `--fm-syntax-*` tokens color code in both modes and the two `assets/hljs/` sheets stay untouched. Diff additions and deletions (`.hljs-addition`, `.hljs-deletion`) are left to the sheets.
 - Upstream's print rules reset `#app` and the table wrapper. The fork sheet loads later and would beat them, so it repeats those resets in its own `@media print` block. Do the same for anything new that print should ignore.
 
 ## Recipes
@@ -95,6 +96,13 @@ Looser body text and a larger heading scale:
 --fm-block-space: 1.1em;
 --fm-h1-size: 2.2em;
 --fm-h2-size: 1.6em;
+```
+
+Hairline borders on code blocks and inline code (both are borderless by default):
+
+```css
+--fm-code-block-border: 1px solid var(--fm-hairline);
+--fm-code-inline-border: 1px solid var(--fm-hairline);
 ```
 
 Zebra-striped tables (set the dark stripe too, inside the dark block):
@@ -148,7 +156,7 @@ Upstream's inline CSS, for finding what a token should override or what needs a 
 | Syntax colors   | `.hljs-*`           | `assets/hljs/github.min.css` and `github-dark.min.css`                         | —      |
 | Editor textarea | `#editor`           | `calc(14px * var(--content-scale))/1.6 "SF Mono","Menlo","Consolas",monospace` | 1501   |
 
-The `.hljs { background: #fff }` from the syntax theme is neutralized by `#preview pre code { background: none }`; the block background comes from `#preview pre`.
+The `.hljs { background: #fff }` from the syntax theme is neutralized by `#preview pre code { background: none }`; the block background comes from `#preview pre`. The fork recolors every syntax class through the `--fm-syntax-*` tokens (see [Specificity rules](#specificity-rules-to-keep-in-mind)), so the GitHub palettes in `assets/hljs/` show only for diff additions and deletions.
 
 ### Tables
 
@@ -160,7 +168,9 @@ The `.hljs { background: #fff }` from the syntax theme is neutralized by `#previ
 | Header cells     | `#preview table th`                    | bg `#f6f8fa`, weight 600, `nowrap`                                         | 1291   |
 | Body cells       | `#preview table td`                    | `min-width: 64px; max-width: 360px`, top-aligned                           | 1292   |
 
-Upstream's `preview-enhance.js` wrapped only tables with 4 or more columns in `.mdp-table-wrap`; the fork wraps every table and sizes the wrapper with `--fm-table-width` (the full text width by default); tables too wide for it scroll sideways inside it.
+Upstream's `preview-enhance.js` wrapped only tables with 4 or more columns in `.mdp-table-wrap`; the fork wraps every table and sizes the wrapper with `--fm-table-width` (the full text width by default). The theme overrides the two layout rules above: `#preview .mdp-table-wrap table` gets `width: 100%` and `#preview table td` drops the 360px `max-width`, so a table fills the wrapper and shares its width by content instead of splitting text columns evenly. A table whose words or code can't wrap into the wrapper still scrolls sideways inside it.
+
+The wrapper also draws the rounded outer frame (`--fm-table-border`, `--fm-table-radius`), because a `border-collapse: collapse` table can't round its corners; cells draw only the inner row and column rules (`--fm-table-rule`), and the last column and last body row drop theirs.
 
 ### Other document blocks
 
