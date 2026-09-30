@@ -24,7 +24,7 @@ Crates: `tao` (window and event loop), `wry` (system WebView: WebView2 on Window
 
 1. `fn main` (≈ 4505) parses the CLI (`md-preview-fm [--edit] [file.md …]`) and calls `instance::acquire(&config_dir(), …)`. If another instance already holds the lock, the file paths are forwarded to it and this process exits.
 2. It restores `session.json`, the theme choice and the window geometry, then creates the `tao` window.
-3. `fn build_startup_page` (≈ 4493) calls `build_page()` with an empty preview. The WebView loads it with `.with_html(…)`, which is WebView2 `NavigateToString`, capped at 2 MiB. That cap is why no document content is ever put in this page.
+3. `fn build_startup_page` (≈ 4493) calls `build_page()` with an empty preview. The WebView loads it with `.with_html(…)`, which is WebView2 `NavigateToString`, documented as capped at 2 MiB (in practice a 1.62 MB page already fails; see the styling guide's font budget). That cap is why no document content is ever put in this page.
 4. After two animation frames the page posts `ready` over IPC. Rust then injects highlight.js with `evaluate_script` (`hljs_bootstrap`), kept out of first paint for startup speed, and calls `render_active_document`.
 5. `fn render_active_document` (≈ 4390) reads the file, renders it, and calls `window.__setContent(html, raw, baseHref, needsMath, needsMermaid)` in the page. KaTeX and Mermaid are injected only when `enhance_flags_for` detects math or a Mermaid fence.
 

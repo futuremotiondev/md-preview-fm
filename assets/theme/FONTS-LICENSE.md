@@ -2,10 +2,10 @@
 
 MD Preview FM embeds two font families in its executable through `assets/theme/futuremotion-fonts.css`. Both are licensed under the SIL Open Font License, Version 1.1, reproduced below as published by each project.
 
-| Font           | Embedded files                                | Version | Source                                       |
-| -------------- | --------------------------------------------- | ------- | -------------------------------------------- |
-| Inter          | Regular, Italic, SemiBold, SemiBold Italic    | 4.001   | <https://github.com/rsms/inter>              |
-| JetBrains Mono | Regular and Italic (variable, weight 100-800) | 2.304   | <https://github.com/JetBrains/JetBrainsMono> |
+| Font           | Embedded files                                                                 | Version | Source                                       |
+| -------------- | ------------------------------------------------------------------------------ | ------- | -------------------------------------------- |
+| Inter          | Variable upright (weight 100-900, optical size 14-32), Italic, SemiBold Italic | 4.001   | <https://github.com/rsms/inter>              |
+| JetBrains Mono | Regular and Italic (variable, weight 100-800)                                  | 2.304   | <https://github.com/JetBrains/JetBrainsMono> |
 
 ## Inter
 

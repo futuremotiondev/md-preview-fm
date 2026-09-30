@@ -20,9 +20,8 @@ OUTPUT = ROOT / "assets" / "theme" / "futuremotion-fonts.css"
 # variable font whose wght axis must cover that range; a single weight marks a
 # static font whose OS/2 weight class must match it.
 FONTS = [
-    ("FM Inter", "normal", "400", "Inter Regular.ttf"),
+    ("FM Inter", "normal", "100 900", "Inter Variable Regular.ttf"),
     ("FM Inter", "italic", "400", "Inter Italic.ttf"),
-    ("FM Inter", "normal", "600", "Inter SemiBold.ttf"),
     ("FM Inter", "italic", "600", "Inter SemiBold Italic.ttf"),
     ("FM JetBrains Mono", "normal", "100 800", "JetBrains Mono Regular.ttf"),
     ("FM JetBrains Mono", "italic", "100 800", "JetBrains Mono Italic.ttf"),

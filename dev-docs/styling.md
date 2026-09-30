@@ -89,13 +89,20 @@ Heavier code, and code ligatures (`!=` drawn as `≠`, `=>` as an arrow):
 --fm-mono-ligatures: normal;
 ```
 
-Looser body text and a larger heading scale:
+Looser body text and a more compact heading scale:
 
 ```css
 --fm-line-height: 1.7;
 --fm-block-space: 1.1em;
 --fm-h1-size: 2.2em;
---fm-h2-size: 1.6em;
+--fm-h2-size: 1.7em;
+```
+
+Headings closer to the text below them, and a looser H2:
+
+```css
+--fm-heading-space-below: 12px;   /* at 100% zoom; content zoom scales it */
+--fm-h2-line-height: 1.35;        /* each level has its own size, weight, line height and letter spacing */
 ```
 
 Hairline borders on code blocks and inline code (both are borderless by default):
@@ -112,7 +119,7 @@ Zebra-striped tables (set the dark stripe too, inside the dark block):
 --fm-table-stripe-bg: #22262c;     /* dark block */
 ```
 
-Different fonts: an installed font only needs its name in `--fm-font-body`, `--fm-font-heading` or `--fm-font-mono`; an embedded one goes through the fonts script first (see [Fonts](#fonts)). Only embedded weights render for real: `FM Inter` has 400 and 600, so keep `--fm-strong-weight` and `--fm-table-head-weight` at one of those.
+Different fonts: an installed font only needs its name in `--fm-font-body`, `--fm-font-heading` or `--fm-font-mono`; an embedded one goes through the fonts script first (see [Fonts](#fonts)). Only embedded weights render for real: upright `FM Inter` is the variable Inter and takes any weight from 100 to 900, but its italics exist only at 400 and 600, so italic text snaps to one of those.
 
 Something no token covers: add a rule below the token blocks with a `#preview …` selector, so it matches upstream's specificity.
 
@@ -198,12 +205,12 @@ The wrapper also draws the rounded outer frame (`--fm-table-border`, `--fm-table
 
 ## Fonts
 
-| Role                       | CSS family              | Source                                             | Weights                       |
-| -------------------------- | ----------------------- | -------------------------------------------------- | ----------------------------- |
-| Body and table text        | `FM Inter`              | Embedded from `app-reference/fonts`                | 400 and 600, each with italic |
-| Headings                   | `SF Pro Display`        | Installed on the machine; falls back to `FM Inter` | Semibold used                 |
-| Code, inline code, editor  | `FM JetBrains Mono`     | Embedded variable font                             | 100–800, set to 340           |
-| App chrome (tabs, toolbar) | upstream's system stack | Installed                                          | —                             |
+| Role                       | CSS family              | Source                              | Weights                                        |
+| -------------------------- | ----------------------- | ----------------------------------- | ---------------------------------------------- |
+| Body and table text        | `FM Inter`              | Embedded from `app-reference/fonts` | Upright 100–900 (variable), italic 400 and 600 |
+| Headings                   | `FM Inter`              | The same embedded variable Inter    | Per level: 630, 560, 530, 510, 520, 510        |
+| Code, inline code, editor  | `FM JetBrains Mono`     | Embedded variable font              | 100–800, set to 340                            |
+| App chrome (tabs, toolbar) | upstream's system stack | Installed                           | —                                              |
 
 ### Embedded fonts
 
@@ -216,9 +223,9 @@ To add, swap or drop a font:
 3. Run `python scripts/build-theme-fonts.py` (needs `pip install fonttools brotli`), then rebuild.
 4. Commit the regenerated `futuremotion-fonts.css`, and update `assets/theme/FONTS-LICENSE.md` if the set of fonts changed.
 
-Budget: the startup page must stay under 2 MiB, the WebView2 `NavigateToString` limit, which `large_document_startup_stays_below_webview2_html_limit` enforces. With the current fonts it is about 1.15 MB. Each static Inter face costs about 190 KB and each JetBrains Mono file 150–160 KB.
+Budget: WebView2 documents a 2 MiB cap for `NavigateToString`, but it rejected a 1.62 MB startup page with `0x80070057` ("The parameter is incorrect"), so the real ceiling is lower. With the current fonts the page is about 1.24 MB, and `page_embeds_futuremotion_fonts_before_theme` fails above 1,450,000 bytes; upstream's `large_document_startup_stays_below_webview2_html_limit` checks only the documented 2 MiB. The variable upright Inter costs about 470 KB, each static Inter italic about 200 KB, and each JetBrains Mono file 150–160 KB.
 
-Licensing: embedding redistributes a font inside the exe. Inter and JetBrains Mono use the SIL Open Font License 1.1, whose notices ship in `assets/theme/FONTS-LICENSE.md`. Most commercial fonts, SF Pro included, don't allow embedding, which is why headings use the installed SF Pro Display.
+Licensing: embedding redistributes a font inside the exe. Inter and JetBrains Mono use the SIL Open Font License 1.1, whose notices ship in `assets/theme/FONTS-LICENSE.md`. Most commercial fonts, SF Pro included, don't allow embedding, so they can only be named as installed fonts.
 
 ### Installed fonts in WebView2
 
@@ -248,13 +255,13 @@ To see what a family actually resolves to, open DevTools → Elements → Comput
 
 ## Tests and checks that pin CSS text
 
-| Check                                                                  | Pinned text                                                                                                                                   |
-| ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cargo test`: `page_loads_futuremotion_theme_after_builtin_styles`     | `#futuremotion-theme` present, after the built-in sheet, content verbatim                                                                     |
-| `cargo test`: `page_embeds_futuremotion_fonts_before_theme`            | `#futuremotion-fonts` between the built-in sheet and the theme, content verbatim, `FM Inter` 400/600 and `FM JetBrains Mono` 100–800 declared |
-| `cargo test`: `page_expands_multi_column_tables`                       | `mdp-table-wrap`, `width: min(calc(100vw - 64px), 1280px)` in the built-in CSS                                                                |
-| `cargo test`: `large_document_startup_stays_below_webview2_html_limit` | Startup page under 2 MiB                                                                                                                      |
-| `scripts/verify.sh` (upstream, macOS-oriented)                         | `@page {{ margin: 12mm; }}`, `#app {{ max-width: none; padding: 0; }}`                                                                        |
+| Check                                                                  | Pinned text                                                                                                                                                                                              |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cargo test`: `page_loads_futuremotion_theme_after_builtin_styles`     | `#futuremotion-theme` present, after the built-in sheet, content verbatim                                                                                                                                |
+| `cargo test`: `page_embeds_futuremotion_fonts_before_theme`            | `#futuremotion-fonts` between the built-in sheet and the theme, content verbatim, upright `FM Inter` 100–900, italic `FM Inter` 400 and `FM JetBrains Mono` 100–800 declared, page under 1,450,000 bytes |
+| `cargo test`: `page_expands_multi_column_tables`                       | `mdp-table-wrap`, `width: min(calc(100vw - 64px), 1280px)` in the built-in CSS                                                                                                                           |
+| `cargo test`: `large_document_startup_stays_below_webview2_html_limit` | Startup page under 2 MiB                                                                                                                                                                                 |
+| `scripts/verify.sh` (upstream, macOS-oriented)                         | `@page {{ margin: 12mm; }}`, `#app {{ max-width: none; padding: 0; }}`                                                                                                                                   |
 
 Overriding these values from `futuremotion-theme.css` leaves the pinned text in `main.rs` intact, so the tests keep passing.
 

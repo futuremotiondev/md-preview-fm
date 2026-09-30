@@ -67,8 +67,8 @@ Upstream's pitfall notes are in `LESSONS.md` (Chinese); `task.md` is upstream's 
 
 - `build_page()`'s CSS sits inside a Rust `format!` string, so literal braces are doubled (`{{ }}`) and `{name}` is a placeholder. The theme file is inserted through a format argument and uses normal braces.
 - The theme wins by loading last, so its selectors must match upstream's specificity (`#preview h1`, not `h1`). Upstream's dark `#preview pre` background is `!important`.
-- The startup page must stay under 2 MiB (WebView2 `NavigateToString` limit, enforced by a test). The embedded fonts put it at about 1.15 MB.
-- Font sources live in `app-reference/fonts`, which is git-ignored: regenerating the fonts CSS needs those local TTFs. Only embedded weights render for real (Inter 400/600, JetBrains Mono 100–800); WebView2 snaps installed variable fonts to named weights.
+- The startup page goes through WebView2 `NavigateToString`. Its documented cap is 2 MiB, but a 1.62 MB page already failed with `0x80070057`. The embedded fonts put it at about 1.24 MB, and a test fails above 1,450,000 bytes.
+- Font sources live in `app-reference/fonts`, which is git-ignored: regenerating the fonts CSS needs those local TTFs. Only embedded weights render for real (upright Inter 100–900 from the variable font, Inter italics 400/600, JetBrains Mono 100–800); WebView2 snaps installed variable fonts to named weights.
 - The self-updater only accepts `futuremotiondev/md-preview-fm` releases, and the asset name `MD-Preview-FM-windows-x64.exe` must match across `release.yml`, `update-check.js`, `src/main.rs` and `scripts/`. See the build doc.
 - macOS-only code and scripts still say "MD Preview" on purpose; the fork doesn't build macOS.
 - `mobile/` has its own CSS (`mobile/shared/mobile-preview.css`); desktop changes don't reach it.

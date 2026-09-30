@@ -2921,9 +2921,13 @@ mod tests {
             .expect("futuremotion theme stylesheet missing");
         assert!(builtin < fonts && fonts < theme, "fonts must load after built-in styles and before the theme");
         assert!(page.contains(FUTUREMOTION_FONTS_CSS), "fonts CSS must be embedded verbatim");
+        // WebView2 rejected a 1.62 MB startup page with 0x80070057 ("The parameter is
+        // incorrect") although it is under the documented 2 MiB NavigateToString cap;
+        // 1.24 MB loads. Keep the embedded fonts well under the page that failed.
+        assert!(page.len() < 1_450_000, "startup page is {} bytes; WebView2 rejected 1.62 MB", page.len());
         for face in [
-            r#"font-family:"FM Inter";font-style:normal;font-weight:400;"#,
-            r#"font-family:"FM Inter";font-style:normal;font-weight:600;"#,
+            r#"font-family:"FM Inter";font-style:normal;font-weight:100 900;"#,
+            r#"font-family:"FM Inter";font-style:italic;font-weight:400;"#,
             r#"font-family:"FM JetBrains Mono";font-style:normal;font-weight:100 800;"#,
         ] {
             assert!(FUTUREMOTION_FONTS_CSS.contains(face), "missing @font-face: {face}");

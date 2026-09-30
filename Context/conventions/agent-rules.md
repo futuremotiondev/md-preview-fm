@@ -13,7 +13,7 @@ Read this first before editing anything.
 - Match upstream's selector specificity in the theme (`#preview h1`, not `h1`). The theme wins only by loading last, and upstream's dark `#preview pre` background is `!important`.
 - Double literal braces (`{{ }}`) when touching markup or JS in `build_page()`; it is a Rust `format!` string and `{name}` is a placeholder.
 - Regenerate `assets/theme/futuremotion-fonts.css` with `scripts/build-theme-fonts.py` after changing the embedded fonts.
-- Keep the startup page under 2 MiB (WebView2 `NavigateToString` limit, enforced by a unit test).
+- Keep the startup page under 1,450,000 bytes, as `page_embeds_futuremotion_fonts_before_theme` enforces. WebView2's `NavigateToString` rejected a 1.62 MB page despite its documented 2 MiB cap.
 - Keep the release asset name `MD-Preview-FM-windows-x64.exe` identical across `release.yml`, `update-check.js`, `src/main.rs` and `scripts/`.
 - Close every running MD Preview FM window before launching a new build, or the launch is forwarded to the old process.
 - Write Conventional Commits messages, one logical change per commit.
